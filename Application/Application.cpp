@@ -21,7 +21,7 @@ void DisplayUsage( char * appPath)
 
 int main(int argc, char **argv)
 {
-	int c;
+	int c=0;
 
 	if (argc == 1)
 	{
@@ -50,6 +50,9 @@ int main(int argc, char **argv)
 			}
 		}
 	}
+
+	std::cout << "Hello world!";
+
     return 0;
 }
 
