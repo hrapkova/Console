@@ -19,6 +19,23 @@ void DisplayUsage( char * appPath)
 	std::cout << "\t-t \"text na vypis\" - vypis textu definovaneho parametrom" << std::endl;
 }
 
+void Hlavicka(char *pole)
+{
+	char option;
+
+	switch (option)
+	{
+		case 'n':
+			// -n vypisuje riadky
+			break;
+		case 'c':
+			// -c vypisuje znaky
+			break;
+	}
+
+	return;
+}
+
 int main(int argc, char **argv)
 {
 	int c=0;
@@ -38,6 +55,7 @@ int main(int argc, char **argv)
 				break;
 			case 't':
 				std::cout << "Text: " << optarg << std::endl;
+				Hlavicka(argv[0]);
 				break;
 			case '?':
 				std::wcout << "Chybny parameter '" << argv[optind - 1] << "'" << std::endl;
