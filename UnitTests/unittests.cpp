@@ -60,5 +60,23 @@ namespace UnitTests
 			Assert::IsTrue(getopt((int)argv.size(), &argv[0], opts) == EOF, L"last option");
 			Assert::IsTrue(optind == 5, L"first param index");
 		}
+
+		TEST_METHOD(Test_X)
+		{
+			optarg = nullptr;
+			optind = 0;
+
+			std::vector<char *> argv = { "Application.exe", "-n", "2", "D:\git2\test.txt" };
+			char * opts = "c:n:";
+
+			Assert::IsTrue(getopt((int)argv.size(), &argv[0], opts) == 'c', L"option -c");
+			Assert::AreEqual(argv[2], optarg, L"option param -c");
+
+			Assert::IsTrue(getopt((int)argv.size(), &argv[0], opts) == 'n', L"option -n");
+			Assert::AreEqual(argv[2], optarg, L"option param -n");
+
+			Assert::IsTrue(getopt((int)argv.size(), &argv[0], opts) == EOF, L"last option");
+			Assert::IsTrue(optind == 5, L"first param index");
+		}
 	};
 }
