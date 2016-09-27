@@ -1,0 +1,5 @@
+Prvý riadok!
+Druhý riadok?
+Tretí riadok;
+Ïalší riadok - èíslo 4,
+Posledný riadok - èíslo 5.

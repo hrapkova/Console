@@ -27,39 +27,47 @@
 //    return;
 //}
 
-LIBRARY_API void Hlavicka(char **argv, int pocet, std::istream& subor)
+LIBRARY_API std::string Hlavicka(char **argv, int pocet, std::istream& input)
 {
+	std::string vystup, tmp;
+	int count = 0;
 
-	int tmp = 0;
-	std::string line;
-
-	//Vypis pozadovanych riadkov
-	if (pocet > 0 && pocet <= tmp)
-		for (int i = 0; i < pocet; ++i)
+	while (getline(input, tmp))
+	{
+		if (count != pocet)
 		{
-			getline(subor, line);
-			std::cout << line << std::endl;
+			vystup = vystup + tmp + "\n";
+			++count;
 		}
-	if (pocet > 0 && pocet > tmp)
+	}
+	if (pocet > count)
+	{
 		std::cout << "Vstup nema potrebny pocet riadkov." << std::endl;
+		return "error";
+	}
 
-	return;
+	return vystup;
 }
 
-LIBRARY_API void Hlavicka(char **argv, int pocet, std::istream& subor, char option)
+LIBRARY_API std::string Hlavicka(char **argv, int pocet, std::istream& input, char option)
 {
-	int tmp = 0;
+	int count = 0;
 	char znak;
+	std::string vystup;
 
-	//Vypis pozadovanych znakov
-	if (pocet > 0 && pocet <= tmp)
-		for (int i = 0; i < pocet; ++i)
+	while (input.get(znak))
+	{
+		if (count != pocet)
 		{
-			subor.get(znak);
-			putchar(znak);
+			vystup = vystup + znak;
+			++count;
 		}
-	if (pocet > 0 && pocet > tmp)
+	}
+	if (pocet > count)
+	{
 		std::cout << "Vstup nema potrebny pocet znakov." << std::endl;
+		return "error";
+	}
 
-	return;
+	return vystup;
 }

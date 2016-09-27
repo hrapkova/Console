@@ -24,41 +24,49 @@ void DisplayUsage( char * appPath)
 	std::cout << "\t-f \"cesta ku suboru\" - cesta ku vstupnemu textovemu suboru" << std::endl;
 }
 
-void Hlavicka(char **argv, int pocet, std::istream& subor)
+std::string Hlavicka(char **argv, int pocet, std::istream& input)
 {
-	
-	int tmp = 0;
-	std::string line;
+	std::string vystup, tmp;
+	int count = 0;
 
-	//Vypis pozadovanych riadkov
-	if (pocet > 0 && pocet <= tmp)
-		for (int i = 0; i < pocet; ++i)
-		{
-			getline(subor, line);
-			std::cout << line << std::endl;
+	while (getline(input, tmp))
+	{
+		if(count!=pocet)
+		{ 
+			vystup = vystup + tmp + "\n";
+			++count;
 		}
-	if (pocet > 0 && pocet > tmp)
+	}
+	if (pocet > count)
+	{
 		std::cout << "Vstup nema potrebny pocet riadkov." << std::endl;
-
-	return;
+		return "error";
+	}
+	
+	return vystup;
 }
 
-void Hlavicka(char **argv, int pocet, std::istream& subor, char option)
+std::string Hlavicka(char **argv, int pocet, std::istream& input, char option)
 {
-	int tmp = 0;
+	int count = 0;
 	char znak;
+	std::string vystup;
 
-	//Vypis pozadovanych znakov
-	if (pocet > 0 && pocet <= tmp)
-		for (int i = 0; i < pocet; ++i)
+	while (input.get(znak))
+	{
+		if (count != pocet)
 		{
-			subor.get(znak);
-			putchar(znak);
+			vystup = vystup + znak;
+			++count;
 		}
-	if (pocet > 0 && pocet > tmp)
+	}
+	if (pocet > count)
+	{
 		std::cout << "Vstup nema potrebny pocet znakov." << std::endl;
+		return "error";
+	}
 
-	return;
+	return vystup;
 }
 
 int main(int argc, char **argv)
@@ -69,12 +77,7 @@ int main(int argc, char **argv)
 	{
 		DisplayUsage(argv[0]);
 	}
-	if (argc < 5)
-	{
-		std::cout << "Nespravny vstup." << std::endl;
-		DisplayUsage(argv[0]);
-	}
-	if(argc>=5)
+	if(argc>=2)
 	{
 		while ((x = getopt(argc, argv, "hc:n:f:")) != EOF)
 		{
@@ -83,98 +86,97 @@ int main(int argc, char **argv)
 			case 'h':
 				DisplayUsage(argv[0]);
 				break;
-			/*case 'f':
-				index = optind;
-				//Aby sa dalo vypisovat aj z viacerych vstupnych suborov
-				while (index != 2)
+			case 'f':
 				{
-					if (std::string(argv[index - 2]) == "-c")
+					std::fstream subor(optarg, std::fstream::in);
+					if (!subor.is_open())
 					{
-						Hlavicka(argv, atoi(argv[index - 1]), argv[index + 1], 'c');
-						std::cout << std::endl;
-						break;
+						std::cout << "Chyba textoveho suboru." << std::endl;
+						return -1;
 					}
-					if (std::string(argv[index - 2]) == "-n")
+					//Aby sa dalo vypisovat aj z viacerych vstupnych suborov
+					index = optind;
+					while (index != 2)
 					{
-						Hlavicka(argv, atoi(argv[index - 1]), argv[index + 1]);
-						std::cout << std::endl;
-						break;
+						if (std::string(argv[index - 2]) == "-c")
+						{
+							std::cout << Hlavicka(argv, atoi(argv[index - 1]), subor, 'c');
+							break;
+						}
+						if (std::string(argv[index - 2]) == "-n")
+						{
+							std::cout << Hlavicka(argv, atoi(argv[index - 1]), subor);
+							break;
+						}
+						else
+							--index;
 					}
-					else
-						--index;
-				}
-				if (index == 2)
-				{
-					std::cout << "Nebol zadany prepinac -n/-c." << std::endl;
-				}
-				break;*/
-			case 'c':
-				{
-
-				//Kontrola ci je argument + cislo
-				if (optarg[0] != '-' && !isdigit(optarg[0]))
-				{
-					std::cout << "Chybny argument." << std::endl;
-					return -1;
-				}
-
-				//Kontrola ci bol zadany vstupny subor k prepinacu -> cita z konzoly
-				if ("-f" != std::string(argv[optind]))
-				{
-					//citaj vstup a posli do funkcie ked newline
-
+					subor.close();
+					if (index == 2)
+					{
+						std::cout << "Nebol zadany prepinac -n/-c." << std::endl;
+					}
 					break;
 				}
-
-				//Funkcia na vypis znakov
-				std::fstream subor(argv[optind + 1], std::fstream::in);
-				//Kontrola suboru
-				if (!subor.is_open())
+			case 'c':
 				{
-					std::cout << "Chyba textoveho suboru." << std::endl;
-					return;
-				}
-				Hlavicka(argv, atoi(optarg), subor, 'c');
-				subor.close();
-				std::cout << std::endl;
-				optind = optind + 2;
-				break;
+					//Kontrola ci je argument + cislo
+					if (optarg[0] != '-' && !isdigit(optarg[0]))
+					{
+						std::cout << "Chybny argument." << std::endl;
+						return -1;
+					}
+
+					//Kontrola ci bol zadany vstupny subor k prepinacu -> cita z konzoly
+					if (argc == 3)
+					{
+						std::cout << Hlavicka(argv, atoi(optarg), std::cin,'c');
+						break;
+					}
+
+					//Funkcia na vypis znakov
+					std::fstream subor(argv[optind + 1], std::fstream::in);
+					//Kontrola suboru
+					if (!subor.is_open())
+					{
+						std::cout << "Chyba textoveho suboru." << std::endl;
+						return -1;
+					}
+					std::cout << Hlavicka(argv, atoi(optarg), subor, 'c');
+					subor.close();
+					std::cout << std::endl;
+					optind = optind + 2;
+					break;
 				}
 			case 'n':
 				{
-
-				//Kontrola ci je argument + cislo
-				if (optarg[0] != '-' && !isdigit(optarg[0]))
-				{
-					std::cout << "Chybny argument." << std::endl;
-					return -1;
-				}
-
-				//Kontrola ci bol zadany vstupny subor k prepinacu
-				if ("-f" != std::string(argv[optind]))
-				{
-					std::string vstup,tmp;
-					while (getline(std::cin, tmp))
+					//Kontrola ci je argument + cislo
+					if (optarg[0] != '-' && !isdigit(optarg[0]))
 					{
-						vstup = vstup + tmp + "\n";
+						std::cout << "Chybny argument." << std::endl;
+						return -1;
 					}
-					//Hlavicka(argv, atoi(optarg), vstup);
-					break;
-				}
 
-				//Funkcia na vypis riadkov
-				std::fstream subor(argv[optind + 1], std::fstream::in);
-				//Kontrola suboru
-				if (!subor.is_open())
-				{
-					std::cout << "Chyba textoveho suboru." << std::endl;
-					return;
-				}
-				Hlavicka(argv, atoi(optarg), subor);
-				subor.close();
-				std::cout << std::endl;
-				optind = optind + 2;
-				break;
+					//Kontrola ci bol zadany vstupny subor k prepinacu
+					if (argc==3)
+					{
+						std::cout << Hlavicka(argv, atoi(optarg), std::cin);
+						break;
+					}
+
+					//Funkcia na vypis riadkov
+					std::fstream subor(argv[optind + 1], std::fstream::in);
+					//Kontrola suboru
+					if (!subor.is_open())
+					{
+						std::cout << "Chyba textoveho suboru." << std::endl;
+						return -1;
+					}
+					std::cout << Hlavicka(argv, atoi(optarg), subor);
+					subor.close();
+					std::cout << std::endl;
+					optind = optind + 2;
+					break;
 				}
 			case '?':
 				std::wcout << "Chybny parameter '" << argv[optind - 1] << "'" << std::endl;

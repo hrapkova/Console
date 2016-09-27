@@ -14,5 +14,5 @@ extern LIBRARY_API int optind;
 extern LIBRARY_API char *optarg;
 
 LIBRARY_API int getopt(int argc, char *argv[], char *optstring);
-LIBRARY_API void Hlavicka(char **argv, int pocet, std::istream& subor);
-LIBRARY_API void Hlavicka(char **argv, int pocet, std::istream& subor, char option);
+LIBRARY_API std::string Hlavicka(char **argv, int pocet, std::istream& input);
+LIBRARY_API std::string Hlavicka(char **argv, int pocet, std::istream& input, char option);
