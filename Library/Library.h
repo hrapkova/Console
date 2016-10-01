@@ -4,6 +4,14 @@
 // that uses this DLL. This way any other project whose source files include this file see 
 // LIBRARY_API functions as being imported from a DLL, whereas this DLL sees symbols
 // defined with this macro as being exported.
+#include "stdafx.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
+
 #ifdef LIBRARY_EXPORTS
 #define LIBRARY_API __declspec(dllexport)
 #else
@@ -14,5 +22,5 @@ extern LIBRARY_API int optind;
 extern LIBRARY_API char *optarg;
 
 LIBRARY_API int getopt(int argc, char *argv[], char *optstring);
-LIBRARY_API std::string Hlavicka(char **argv, int pocet, std::istream& input);
-LIBRARY_API std::string Hlavicka(char **argv, int pocet, std::istream& input, char option);
+LIBRARY_API std::string Hlavicka(int pocet, std::istream& input);
+LIBRARY_API std::string Hlavicka(int pocet, std::istream& input, char option);

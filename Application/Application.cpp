@@ -8,6 +8,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <sstream>
 
 void DisplayUsage( char * appPath)
 {
@@ -24,12 +25,12 @@ void DisplayUsage( char * appPath)
 	std::cout << "\t-f \"cesta ku suboru\" - cesta ku vstupnemu textovemu suboru" << std::endl;
 }
 
-std::string Hlavicka(char **argv, int pocet, std::istream& input)
+std::string Hlavicka(int pocet, std::istream& input)
 {
 	std::string vystup, tmp;
 	int count = 0;
 
-	while (getline(input, tmp))
+	while (std::getline(input, tmp))
 	{
 		if(count!=pocet)
 		{ 
@@ -46,7 +47,7 @@ std::string Hlavicka(char **argv, int pocet, std::istream& input)
 	return vystup;
 }
 
-std::string Hlavicka(char **argv, int pocet, std::istream& input, char option)
+std::string Hlavicka(int pocet, std::istream& input, char option)
 {
 	int count = 0;
 	char znak;
@@ -100,12 +101,12 @@ int main(int argc, char **argv)
 					{
 						if (std::string(argv[index - 2]) == "-c")
 						{
-							std::cout << Hlavicka(argv, atoi(argv[index - 1]), subor, 'c');
+							std::cout << Hlavicka(atoi(argv[index - 1]), subor, 'c');
 							break;
 						}
 						if (std::string(argv[index - 2]) == "-n")
 						{
-							std::cout << Hlavicka(argv, atoi(argv[index - 1]), subor);
+							std::cout << Hlavicka(atoi(argv[index - 1]), subor);
 							break;
 						}
 						else
@@ -130,7 +131,23 @@ int main(int argc, char **argv)
 					//Kontrola ci bol zadany vstupny subor k prepinacu -> cita z konzoly
 					if (argc == 3)
 					{
-						std::cout << Hlavicka(argv, atoi(optarg), std::cin,'c');
+						std::cout << Hlavicka(atoi(optarg), std::cin,'c');
+						break;
+					}
+
+					//Kontrola ci bol zadany vstupny subor k prepinacu -> cita z prikazoveho riadku stringstream
+					if (argc == 4 && "-f"!=argv[3])
+					{
+						std::string str(argv[3]);
+						size_t pos = 0;
+						//Aby som mohla vypisovat newline
+						while ((pos = str.find("\\n", pos)) != std::string::npos)
+						{
+							str.replace(pos, 2, "\n");
+							pos += 2;
+						};
+						std::istringstream xx(str);
+						std::cout << Hlavicka(atoi(optarg), xx, 'c');
 						break;
 					}
 
@@ -142,7 +159,7 @@ int main(int argc, char **argv)
 						std::cout << "Chyba textoveho suboru." << std::endl;
 						return -1;
 					}
-					std::cout << Hlavicka(argv, atoi(optarg), subor, 'c');
+					std::cout << Hlavicka(atoi(optarg), subor, 'c');
 					subor.close();
 					std::cout << std::endl;
 					optind = optind + 2;
@@ -160,7 +177,23 @@ int main(int argc, char **argv)
 					//Kontrola ci bol zadany vstupny subor k prepinacu
 					if (argc==3)
 					{
-						std::cout << Hlavicka(argv, atoi(optarg), std::cin);
+						std::cout << Hlavicka(atoi(optarg), std::cin);
+						break;
+					}
+
+					//Kontrola ci bol zadany vstupny subor k prepinacu -> cita z prikazoveho riadku stringstream
+					if (argc == 4 && "-f" != argv[3])
+					{
+						std::string str(argv[3]);
+						size_t pos = 0;
+						//Aby som mohla vypisovat newline
+						while ((pos = str.find("\\n", pos)) != std::string::npos)
+						{
+							str.replace(pos, 2, "\n");
+							pos += 2;
+						};
+						std::istringstream xx(str);
+						std::cout << Hlavicka(atoi(optarg), xx);
 						break;
 					}
 
@@ -172,7 +205,7 @@ int main(int argc, char **argv)
 						std::cout << "Chyba textoveho suboru." << std::endl;
 						return -1;
 					}
-					std::cout << Hlavicka(argv, atoi(optarg), subor);
+					std::cout << Hlavicka(atoi(optarg), subor);
 					subor.close();
 					std::cout << std::endl;
 					optind = optind + 2;

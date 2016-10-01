@@ -2,9 +2,13 @@
 //
 
 #include "stdafx.h"
-#include "Library.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include "..\Library\Library.h"
 #include <iostream>
+#include <fstream>
 #include <string>
+#include <sstream>
 //#include <windows.h>
 //#include <stdio.h>
 //#include <stdlib.h>
@@ -27,7 +31,7 @@
 //    return;
 //}
 
-LIBRARY_API std::string Hlavicka(char **argv, int pocet, std::istream& input)
+LIBRARY_API std::string Hlavicka(int pocet, std::istream& input)
 {
 	std::string vystup, tmp;
 	int count = 0;
@@ -49,7 +53,7 @@ LIBRARY_API std::string Hlavicka(char **argv, int pocet, std::istream& input)
 	return vystup;
 }
 
-LIBRARY_API std::string Hlavicka(char **argv, int pocet, std::istream& input, char option)
+LIBRARY_API std::string Hlavicka(int pocet, std::istream& input, char option)
 {
 	int count = 0;
 	char znak;

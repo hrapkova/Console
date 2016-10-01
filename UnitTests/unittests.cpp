@@ -6,6 +6,13 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 #include "../Library/Library.h"
 
 #include <vector>
+#include "stdafx.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
 
 namespace UnitTests
 {		
@@ -66,17 +73,45 @@ namespace UnitTests
 			optarg = nullptr;
 			optind = 0;
 
-			std::vector<char *> argv = { "Application.exe", "-n", "2", "D:\git2\test.txt" };
-			char * opts = "c:n:";
+			std::vector<char *> argv1 = { "Application.exe", "-c", "2", "-f", "C:\\Users\\Lenka\\Desktop\\Škola\\4.roèník\\TSS\\zadanie1.txt" };
+			std::vector<char *> argv2 = { "Application.exe", "-n", "1", "-f", "C:\\Users\\Lenka\\Desktop\\Škola\\4.roèník\\TSS\\zadanie1.txt" };
+			std::vector<char *> argv5 = { "Application.exe", "-n", "2", "toto je nejaky string\nstring cislo2\nposledny string"};
+			char * opts = "c:n:f:";
+			//kvoli newlinom
+			std::string str(argv5[3]);
+			size_t pos = 0;
+			while ((pos = str.find("\\n", pos)) != std::string::npos)
+			{
+				str.replace(pos, 2, "\n");
+				pos += 2;
+			};
 
-			Assert::IsTrue(getopt((int)argv.size(), &argv[0], opts) == 'c', L"option -c");
-			Assert::AreEqual(argv[2], optarg, L"option param -c");
+			//**************************************************************************************************
 
-			Assert::IsTrue(getopt((int)argv.size(), &argv[0], opts) == 'n', L"option -n");
-			Assert::AreEqual(argv[2], optarg, L"option param -n");
+			//Kontrola vypisu znakov
 
-			Assert::IsTrue(getopt((int)argv.size(), &argv[0], opts) == EOF, L"last option");
-			Assert::IsTrue(optind == 5, L"first param index");
+			//kontrola pri citani zo suboru
+			std::fstream subor;
+			subor.open(argv1[4], std::fstream::in);
+			Assert::AreEqual(Hlavicka(atoi(argv1[2]), subor, 'c'),std::string("Pr"), L"option -c");
+			subor.close();
+
+			//kontrola pri citani stringu
+			std::istringstream xxx(str);
+			Assert::AreEqual(Hlavicka(atoi(argv5[2]), xxx, 'c'), std::string("to"), L"option -c");
+
+			//********************************************************************************************
+
+			//Kontrola vypisu riadkov
+
+			//kontrola pri citani zo suboru
+			subor.open(argv1[4], std::fstream::in);
+			Assert::AreEqual(Hlavicka(atoi(argv2[2]), subor), std::string("Prvý riadok!\n"), L"option -n");
+			subor.close();
+
+			//kontrola pri citani zo stringu
+			std::istringstream xx(str);
+			Assert::AreEqual(Hlavicka(atoi(argv5[2]), xx), std::string("toto je nejaky string\nstring cislo2\n"), L"option -n");
 		}
 	};
 }
